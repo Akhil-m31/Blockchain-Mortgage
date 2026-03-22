@@ -1,0 +1,93 @@
+// SPDX-License-Identifier: UNLICENSED
+pragma solidity ^0.8.0;
+
+contract Mortgage {
+
+struct Loan {
+address borrower;
+uint256 amount;
+uint256 interest;
+uint256 duration;
+bool approved;
+uint256 emiPaid;
+uint256 totalEmi;
+string documentHash;
+bool closed;
+}
+
+mapping(address => Loan) public loans;
+
+function applyLoan(uint256 amount, uint256 interest, uint256 duration) public {
+loans[msg.sender] = Loan(
+msg.sender,
+amount,
+interest,
+duration,
+false,
+0,
+duration,
+"",
+false
+);
+}
+
+function getLoan(address user) public view returns (
+address,
+uint256,
+uint256,
+uint256,
+bool,
+uint256,
+uint256,
+string memory,
+bool
+) {
+Loan memory loan = loans[user];
+return (
+loan.borrower,
+loan.amount,
+loan.interest,
+loan.duration,
+loan.approved,
+loan.emiPaid,
+loan.totalEmi,
+loan.documentHash,
+loan.closed
+);
+}
+
+function approveLoan(address borrower) public {
+require(loans[borrower].amount > 0, "Loan does not exist");
+loans[borrower].approved = true;
+}
+
+function calculateEMI(address borrower) public view returns (uint256) {
+Loan memory loan = loans[borrower];
+require(loan.approved, "Loan not approved");
+
+uint256 totalAmount = loan.amount + (loan.amount * loan.interest / 100);
+return totalAmount / loan.duration;
+}
+
+function payEMI() public {
+Loan storage loan = loans[msg.sender];
+require(loan.approved, "Loan not approved");
+require(!loan.closed, "Loan already closed");
+require(loan.emiPaid < loan.totalEmi, "All EMIs paid");
+
+loan.emiPaid += 1;
+}
+
+function setDocumentHash(string memory hash) public {
+require(loans[msg.sender].amount > 0, "Loan does not exist");
+loans[msg.sender].documentHash = hash;
+}
+
+function closeLoan() public {
+Loan storage loan = loans[msg.sender];
+require(loan.emiPaid == loan.totalEmi, "EMIs not fully paid");
+
+loan.closed = true;
+}
+
+}
