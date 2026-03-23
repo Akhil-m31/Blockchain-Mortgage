@@ -38,7 +38,7 @@ function App() {
         {/* Brand */}
         <div className="header-brand" onClick={goHome} style={{ cursor: 'pointer' }}>
           <div className="brand-logo">🏦</div>
-          <div className="brand-name">Block<span>Mortgage</span></div>
+          <div className="brand-name">BlockChain <span>- Mortgage</span></div>
         </div>
 
         {/* Role Pill */}
