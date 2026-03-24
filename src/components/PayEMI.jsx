@@ -48,7 +48,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
       setMessage({ type: 'pending', text: 'Processing EMI payment…' });
       setTxHash(tx.hash);
       await tx.wait();
-      setMessage({ type: 'success', text: '✅ EMI payment recorded on blockchain!' });
+      setMessage({ type: 'success', text: 'EMI payment recorded on blockchain.' });
       if (onSuccess) onSuccess();
       fetchLoan();
     } catch (err) {
@@ -72,7 +72,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
   // No loan
   if (!loan) return (
     <div className="empty-state">
-      <span className="empty-icon">💳</span>
+      <span className="empty-icon" style={{ fontSize: '2rem', color: 'var(--text-muted)' }}>E</span>
       <span className="empty-title">No Active Loan</span>
       <span className="empty-desc">Apply for a loan first to enable EMI payments.</span>
     </div>
@@ -81,7 +81,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
   // Not approved yet
   if (!loan.approved) return (
     <div className="alert alert-warning">
-      <span className="alert-icon">⏳</span>
+      <span className="alert-icon">!</span>
       <span>Your loan is pending lender approval before you can make EMI payments.</span>
     </div>
   );
@@ -89,7 +89,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
   // Already closed
   if (loan.closed) return (
     <div className="alert alert-success">
-      <span className="alert-icon">✅</span>
+      <span className="alert-icon">✓</span>
       <span>This loan has been fully repaid and closed.</span>
     </div>
   );
@@ -98,7 +98,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
   if (loan.emiPaid >= loan.totalEmi) return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
       <div className="alert alert-success">
-        <span className="alert-icon">🎉</span>
+        <span className="alert-icon">✓</span>
         <span>All {loan.totalEmi} EMIs paid! Please close the loan in the Loan Closure section.</span>
       </div>
     </div>
@@ -118,7 +118,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
             Installment {loan.emiPaid + 1} of {loan.totalEmi}
           </span>
         </div>
-        <span style={{ fontSize: '1.8rem' }}>💰</span>
+        <span style={{ fontSize: '1.4rem', color: 'var(--navy-700)', fontWeight: 700 }}>ETH</span>
       </div>
 
       {/* Progress */}
@@ -154,7 +154,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
         </div>
         <div>
           <div style={{ fontWeight: 600, marginBottom: 2 }}>Remaining Total</div>
-          <div style={{ color: 'var(--blue-400)', fontWeight: 700 }}>
+          <div style={{ color: 'var(--navy-700)', fontWeight: 700 }}>
             {emiAmt !== null
               ? `${((loan.totalEmi - loan.emiPaid) * emiAmt).toFixed(6)} ETH`
               : '—'}
@@ -169,7 +169,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
       >
         {paying
           ? <><span className="btn-spinner" /> Processing…</>
-          : `💳 Pay EMI #${loan.emiPaid + 1}`}
+          : `Pay EMI #${loan.emiPaid + 1}`}
       </button>
 
       {txHash && (
@@ -184,7 +184,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
       {message && (
         <div className={`alert alert-${message.type}`}>
           <span className="alert-icon">
-            {message.type === 'success' ? '✅' : message.type === 'error' ? '❌' : '⏳'}
+            {message.type === 'success' ? '✓' : message.type === 'error' ? '×' : '...'}
           </span>
           <span>{message.text}</span>
         </div>

@@ -40,7 +40,7 @@ export default function CloseLoan({ contract, account, onSuccess }) {
       setMessage({ type: 'pending', text: 'Closing loan on blockchain…' });
       setTxHash(tx.hash);
       await tx.wait();
-      setMessage({ type: 'success', text: '🎉 Loan closed successfully! Your mortgage is complete.' });
+      setMessage({ type: 'success', text: 'Loan closed successfully. Your mortgage is complete.' });
       setConfirm(false);
       if (onSuccess) onSuccess();
       fetchLoan();
@@ -64,7 +64,7 @@ export default function CloseLoan({ contract, account, onSuccess }) {
 
   if (!loan) return (
     <div className="empty-state">
-      <span className="empty-icon">🔐</span>
+      <span className="empty-icon" style={{ fontSize: '2rem', color: 'var(--text-muted)' }}>&#128274;</span>
       <span className="empty-title">No Loan Found</span>
       <span className="empty-desc">Apply for a loan to use this section.</span>
     </div>
@@ -73,7 +73,7 @@ export default function CloseLoan({ contract, account, onSuccess }) {
   if (loan.closed) return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
       <div className="alert alert-success">
-        <span className="alert-icon">✅</span>
+        <span className="alert-icon">✓</span>
         <span>This loan has already been closed. Your mortgage obligations are fulfilled.</span>
       </div>
     </div>
@@ -117,14 +117,14 @@ export default function CloseLoan({ contract, account, onSuccess }) {
       {/* Condition messages */}
       {!loan.approved && (
         <div className="alert alert-warning">
-          <span className="alert-icon">⏳</span>
+          <span className="alert-icon">!</span>
           <span>Loan must be approved by the lender before it can be closed.</span>
         </div>
       )}
 
       {loan.approved && !allPaid && (
         <div className="alert alert-info">
-          <span className="alert-icon">ℹ️</span>
+          <span className="alert-icon">i</span>
           <span>
             You must pay all {loan.totalEmi} EMIs before closing the loan.
             {' '}{loan.totalEmi - loan.emiPaid} payment(s) remaining.
@@ -135,7 +135,7 @@ export default function CloseLoan({ contract, account, onSuccess }) {
       {canClose && !confirm && (
         <>
           <div className="confirm-box">
-            <div className="confirm-box-title">🎉 All EMIs Paid!</div>
+            <div className="confirm-box-title">All EMIs Paid</div>
             <div className="confirm-box-desc">
               You have successfully paid all {loan.totalEmi} installments. 
               Click below to permanently close this loan on the blockchain. 
@@ -146,7 +146,7 @@ export default function CloseLoan({ contract, account, onSuccess }) {
             className="btn btn-danger btn-full"
             onClick={() => setConfirm(true)}
           >
-            🔐 Request Loan Closure
+            Request Loan Closure
           </button>
         </>
       )}
@@ -162,7 +162,7 @@ export default function CloseLoan({ contract, account, onSuccess }) {
               textAlign: 'center',
             }}
           >
-            <div style={{ fontSize: '2rem', marginBottom: 'var(--sp-2)' }}>⚠️</div>
+            <div style={{ fontSize: '1.5rem', marginBottom: 'var(--sp-2)', color: 'var(--red-600)' }}>!</div>
             <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--red-400)', marginBottom: 'var(--sp-2)' }}>
               Confirm Loan Closure
             </div>
@@ -187,7 +187,7 @@ export default function CloseLoan({ contract, account, onSuccess }) {
             >
               {closing
                 ? <><span className="btn-spinner" /> Closing…</>
-                : '✅ Confirm Closure'}
+                : 'Confirm Closure'}
             </button>
           </div>
         </>
@@ -205,7 +205,7 @@ export default function CloseLoan({ contract, account, onSuccess }) {
       {message && (
         <div className={`alert alert-${message.type}`}>
           <span className="alert-icon">
-            {message.type === 'success' ? '🎉' : message.type === 'error' ? '❌' : '⏳'}
+            {message.type === 'success' ? '✓' : message.type === 'error' ? '×' : '...'}
           </span>
           <span>{message.text}</span>
         </div>

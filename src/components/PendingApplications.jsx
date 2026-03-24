@@ -126,8 +126,10 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
   const approved = applications.filter(a => a.loan.approved && !a.loan.closed);
   const closed   = applications.filter(a => a.loan.closed);
 
-  const LoanRow = ({ item, actionLabel, actionClass, onAction }) => (
-    <div className="loan-list-item">
+  const LoanRow = ({ item, actionLabel, actionClass, onAction }) => {
+    const status = item.loan.closed ? 'closed' : item.loan.approved ? 'approved' : 'pending';
+    return (
+      <div className={`loan-list-item status-${status}`}>
       <div className="loan-list-header">
         <span className="loan-list-address">
           {item.address.slice(0, 10)}…{item.address.slice(-8)}
@@ -174,7 +176,7 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
           }}
           title="Copy address"
         >
-          📋 Copy
+          Copy
         </button>
         {onAction && (
           <button
@@ -186,7 +188,8 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
         )}
       </div>
     </div>
-  );
+    );
+  };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
@@ -210,13 +213,13 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
         >
           {loading
             ? <><span className="btn-spinner" style={{ borderTopColor: 'var(--text-muted)' }} /> Scanning…</>
-            : '🔄 Refresh'}
+            : 'Refresh'}
         </button>
       </div>
 
       {error && (
         <div className="alert alert-error">
-          <span className="alert-icon">❌</span>
+          <span className="alert-icon">×</span>
           <span style={{ fontSize: '0.82rem' }}>{error}</span>
         </div>
       )}
@@ -237,19 +240,19 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
             <div style={{
               display: 'flex', alignItems: 'center', gap: 'var(--sp-2)',
               marginBottom: 'var(--sp-3)',
-              fontSize: '0.78rem', fontWeight: 700, color: 'var(--amber-400)',
+              fontSize: '0.78rem', fontWeight: 700, color: 'var(--amber-700)',
               textTransform: 'uppercase', letterSpacing: '0.5px',
             }}>
-              <span>⏳ Awaiting Approval</span>
+              <span>Awaiting Approval</span>
               <span style={{
-                background: 'rgba(245,158,11,0.15)', border: '1px solid rgba(245,158,11,0.3)',
+                background: 'var(--amber-50)', border: '1px solid var(--amber-100)',
                 borderRadius: 'var(--r-full)', padding: '1px 8px', fontSize: '0.7rem',
               }}>{pending.length}</span>
             </div>
 
             {pending.length === 0 ? (
               <div className="empty-state" style={{ padding: 'var(--sp-6)' }}>
-                <span className="empty-icon">📭</span>
+                <span className="empty-icon" style={{ fontSize: '2rem', color: 'var(--text-muted)' }}>--</span>
                 <span className="empty-desc">No pending applications found. Scan again after a borrower submits.</span>
               </div>
             ) : (
@@ -258,7 +261,7 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
                   <LoanRow
                     key={item.address}
                     item={item}
-                    actionLabel="✅ Approve"
+                    actionLabel="Approve"
                     actionClass="btn-success"
                     onAction={onSelectBorrower}
                   />
@@ -275,12 +278,12 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 'var(--sp-2)',
                   marginBottom: 'var(--sp-3)',
-                  fontSize: '0.78rem', fontWeight: 700, color: 'var(--emerald-400)',
+                  fontSize: '0.78rem', fontWeight: 700, color: 'var(--green-700)',
                   textTransform: 'uppercase', letterSpacing: '0.5px',
                 }}>
-                  <span>✅ Active Loans</span>
+                  <span>Active Loans</span>
                   <span style={{
-                    background: 'rgba(16,185,129,0.12)', border: '1px solid rgba(16,185,129,0.25)',
+                    background: 'var(--green-50)', border: '1px solid var(--green-100)',
                     borderRadius: 'var(--r-full)', padding: '1px 8px', fontSize: '0.7rem',
                   }}>{approved.length}</span>
                 </div>
@@ -289,7 +292,7 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
                     <LoanRow
                       key={item.address}
                       item={item}
-                      actionLabel="🔍 Inspect"
+                      actionLabel="Inspect"
                       actionClass="btn-ghost"
                       onAction={onSelectBorrower}
                     />
@@ -307,12 +310,12 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: 'var(--sp-2)',
                   marginBottom: 'var(--sp-3)',
-                  fontSize: '0.78rem', fontWeight: 700, color: 'var(--slate-400)',
+                  fontSize: '0.78rem', fontWeight: 700, color: 'var(--text-muted)',
                   textTransform: 'uppercase', letterSpacing: '0.5px',
                 }}>
-                  <span>🔒 Closed Loans</span>
+                  <span>Closed Loans</span>
                   <span style={{
-                    background: 'rgba(100,116,139,0.12)', border: '1px solid rgba(100,116,139,0.25)',
+                    background: 'var(--bg-elevated)', border: '1px solid var(--border-light)',
                     borderRadius: 'var(--r-full)', padding: '1px 8px', fontSize: '0.7rem',
                   }}>{closed.length}</span>
                 </div>

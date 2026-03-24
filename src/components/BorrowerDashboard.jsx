@@ -15,7 +15,7 @@ export default function BorrowerDashboard({ contract, account }) {
       {/* Hero */}
       <div className="dashboard-hero">
         <div className="dashboard-title-block">
-          <h1>🏠 Borrower Dashboard</h1>
+          <h1>Borrower Dashboard</h1>
           <p>Apply for a loan, track EMIs, and manage your mortgage documents.</p>
         </div>
         <div className="dashboard-account">
@@ -33,7 +33,7 @@ export default function BorrowerDashboard({ contract, account }) {
           {/* Apply Loan */}
           <div className="card">
             <div className="card-header">
-              <div className="card-icon icon-blue">📝</div>
+              <div className="card-icon icon-blue">A</div>
               <div className="card-header-text">
                 <h3>Apply for Loan</h3>
                 <p>Submit your mortgage request</p>
@@ -47,7 +47,7 @@ export default function BorrowerDashboard({ contract, account }) {
           {/* Document Upload */}
           <div className="card">
             <div className="card-header">
-              <div className="card-icon icon-violet">📄</div>
+              <div className="card-icon icon-violet">D</div>
               <div className="card-header-text">
                 <h3>Upload Document</h3>
                 <p>Store your mortgage docs on IPFS</p>
@@ -66,7 +66,7 @@ export default function BorrowerDashboard({ contract, account }) {
           {/* Loan Details */}
           <div className="card">
             <div className="card-header">
-              <div className="card-icon icon-green">📊</div>
+              <div className="card-icon icon-green">S</div>
               <div className="card-header-text">
                 <h3>Loan Status</h3>
                 <p>Your current loan details</p>
@@ -80,7 +80,7 @@ export default function BorrowerDashboard({ contract, account }) {
           {/* Pay EMI */}
           <div className="card">
             <div className="card-header">
-              <div className="card-icon icon-amber">💳</div>
+              <div className="card-icon icon-amber">E</div>
               <div className="card-header-text">
                 <h3>Pay EMI</h3>
                 <p>Make your monthly payment</p>
@@ -94,7 +94,7 @@ export default function BorrowerDashboard({ contract, account }) {
           {/* Close Loan */}
           <div className="card">
             <div className="card-header">
-              <div className="card-icon icon-red">🔐</div>
+              <div className="card-icon icon-red">C</div>
               <div className="card-header-text">
                 <h3>Close Loan</h3>
                 <p>Complete and close after full repayment</p>

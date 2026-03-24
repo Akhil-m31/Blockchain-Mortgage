@@ -79,9 +79,9 @@ export default function ApproveLoan({ contract, account, prefillAddress = '', on
       if (parsed.closed) {
         setMessage({ type: 'info', text: 'This loan has already been closed.' });
       } else if (parsed.approved) {
-        setMessage({ type: 'warning', text: '⚠️ This loan is already approved.' });
+        setMessage({ type: 'warning', text: 'This loan is already approved.' });
       } else {
-        setMessage({ type: 'info', text: '✓ Loan found. Review terms and approve below.' });
+        setMessage({ type: 'info', text: 'Loan found. Review terms and approve below.' });
       }
     } catch (err) {
       setMessage({ type: 'error', text: 'Error fetching loan: ' + err.message });
@@ -102,7 +102,7 @@ export default function ApproveLoan({ contract, account, prefillAddress = '', on
       setMessage({ type: 'pending', text: 'Approval transaction submitted…' });
       setTxHash(tx.hash);
       await tx.wait();
-      setMessage({ type: 'success', text: '✅ Loan approved successfully! The borrower can now make EMI payments.' });
+      setMessage({ type: 'success', text: 'Loan approved successfully. The borrower can now make EMI payments.' });
       setLoan(prev => ({ ...prev, approved: true }));
       if (onSuccess) onSuccess();
     } catch (err) {
@@ -140,7 +140,7 @@ export default function ApproveLoan({ contract, account, prefillAddress = '', on
           >
             {checking
               ? <><span className="btn-spinner" style={{ borderTopColor: 'var(--text-muted)' }} /> Checking…</>
-              : '🔍 Check'}
+              : 'Check'}
           </button>
         </div>
       </div>
@@ -211,7 +211,7 @@ export default function ApproveLoan({ contract, account, prefillAddress = '', on
           {loan.documentHash && (
             <div style={{ padding: 'var(--sp-3) var(--sp-5)', borderTop: '1px solid var(--border-subtle)' }}>
               <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 600, textTransform: 'uppercase', marginBottom: '4px' }}>
-                📄 Document Hash
+                Document Hash
               </div>
               <a
                 href={`https://gateway.pinata.cloud/ipfs/${loan.documentHash}`}
@@ -254,7 +254,7 @@ export default function ApproveLoan({ contract, account, prefillAddress = '', on
         >
           {loading
             ? <><span className="btn-spinner" /> Approving…</>
-            : '✅ Approve Loan'}
+            : 'Approve Loan'}
         </button>
       )}
 
@@ -273,7 +273,7 @@ export default function ApproveLoan({ contract, account, prefillAddress = '', on
             gap: 'var(--sp-2)',
           }}
         >
-          ✅ This loan is already approved. The borrower is making payments.
+          This loan is already approved. The borrower is making payments.
         </div>
       )}
 
@@ -289,7 +289,7 @@ export default function ApproveLoan({ contract, account, prefillAddress = '', on
       {message && (
         <div className={`alert alert-${message.type}`}>
           <span className="alert-icon">
-            {message.type === 'success' ? '✅' : message.type === 'error' ? '❌' : message.type === 'warning' ? '⚠️' : 'ℹ️'}
+            {message.type === 'success' ? '✓' : message.type === 'error' ? '×' : message.type === 'warning' ? '!' : 'i'}
           </span>
           <span>{message.text}</span>
         </div>

@@ -59,7 +59,7 @@ export default function ApplyLoanForm({ contract, onSuccess }) {
       setTxHash(tx.hash);
 
       await tx.wait();
-      setMessage({ type: 'success', text: '✅ Loan application submitted! Awaiting lender approval.' });
+      setMessage({ type: 'success', text: 'Loan application submitted successfully. Awaiting lender approval.' });
       setAmount(''); setInterest(''); setDuration('');
       if (onSuccess) onSuccess();
     } catch (err) {
@@ -97,7 +97,7 @@ export default function ApplyLoanForm({ contract, onSuccess }) {
           lineHeight: 1.6,
         }}
       >
-        💡 <strong style={{ color: 'var(--text-secondary)' }}>How it works:</strong> Submit your requested loan amount along with your proposed interest rate and duration. The lender will review and approve the terms. You can only have one active loan at a time.
+        <strong style={{ color: 'var(--text-secondary)' }}>How it works:</strong> Submit your requested loan amount along with your proposed interest rate and duration. The lender will review and approve the terms. You can only have one active loan at a time.
       </div>
 
       {/* Amount */}
@@ -188,7 +188,7 @@ export default function ApplyLoanForm({ contract, onSuccess }) {
       <button type="submit" disabled={loading} className="btn btn-primary btn-full">
         {loading
           ? <><span className="btn-spinner" /> Submitting…</>
-          : '📋 Submit Loan Application'}
+          : 'Submit Loan Application'}
       </button>
 
       {txHash && (
@@ -203,7 +203,7 @@ export default function ApplyLoanForm({ contract, onSuccess }) {
       {message && (
         <div className={`alert alert-${message.type}`}>
           <span className="alert-icon">
-            {message.type === 'success' ? '✅' : message.type === 'error' ? '❌' : message.type === 'pending' ? '⏳' : 'ℹ️'}
+            {message.type === 'success' ? '✓' : message.type === 'error' ? '×' : message.type === 'pending' ? '...' : 'i'}
           </span>
           <span>{message.text}</span>
         </div>
