@@ -3,91 +3,118 @@ pragma solidity ^0.8.0;
 
 contract Mortgage {
 
-struct Loan {
-address borrower;
-uint256 amount;
-uint256 interest;
-uint256 duration;
-bool approved;
-uint256 emiPaid;
-uint256 totalEmi;
-string documentHash;
-bool closed;
-}
+    struct Loan {
+        address borrower;
+        address payable lender;
+        uint256 amount;
+        uint256 interest;
+        uint256 duration;
+        bool approved;
+        uint256 emiPaid;
+        uint256 totalEmi;
+        string documentHash;
+        bool closed;
+    }
 
-mapping(address => Loan) public loans;
+    mapping(address => Loan) public loans;
 
-function applyLoan(uint256 amount, uint256 interest, uint256 duration) public {
-loans[msg.sender] = Loan(
-msg.sender,
-amount,
-interest,
-duration,
-false,
-0,
-duration,
-"",
-false
-);
-}
+    // ─── Borrower applies for a loan ───────────────────────────────────────────
+    function applyLoan(uint256 amount, uint256 interest, uint256 duration) public {
+        loans[msg.sender] = Loan(
+            msg.sender,
+            payable(address(0)),
+            amount,
+            interest,
+            duration,
+            false,
+            0,
+            duration,
+            "",
+            false
+        );
+    }
 
-function getLoan(address user) public view returns (
-address,
-uint256,
-uint256,
-uint256,
-bool,
-uint256,
-uint256,
-string memory,
-bool
-) {
-Loan memory loan = loans[user];
-return (
-loan.borrower,
-loan.amount,
-loan.interest,
-loan.duration,
-loan.approved,
-loan.emiPaid,
-loan.totalEmi,
-loan.documentHash,
-loan.closed
-);
-}
+    // ─── Read loan details ─────────────────────────────────────────────────────
+    function getLoan(address user) public view returns (
+        address,
+        uint256,
+        uint256,
+        uint256,
+        bool,
+        uint256,
+        uint256,
+        string memory,
+        bool
+    ) {
+        Loan memory loan = loans[user];
+        return (
+            loan.borrower,
+            loan.amount,
+            loan.interest,
+            loan.duration,
+            loan.approved,
+            loan.emiPaid,
+            loan.totalEmi,
+            loan.documentHash,
+            loan.closed
+        );
+    }
 
-function approveLoan(address borrower) public {
-require(loans[borrower].amount > 0, "Loan does not exist");
-loans[borrower].approved = true;
-}
+    // ─── Get lender address ────────────────────────────────────────────────────
+    function getLender(address borrower) public view returns (address) {
+        return loans[borrower].lender;
+    }
 
-function calculateEMI(address borrower) public view returns (uint256) {
-Loan memory loan = loans[borrower];
-require(loan.approved, "Loan not approved");
+    // ─── Lender approves AND funds the loan ───────────────────────────────────
+    function approveLoan(address payable borrower) public payable {
+        require(loans[borrower].amount > 0, "Loan does not exist");
+        require(!loans[borrower].approved,  "Loan already approved");
+        require(msg.value == loans[borrower].amount, "Must send exact loan amount in ETH");
 
-uint256 totalAmount = loan.amount + (loan.amount * loan.interest / 100);
-return totalAmount / loan.duration;
-}
+        loans[borrower].approved = true;
+        loans[borrower].lender   = payable(msg.sender);
 
-function payEMI() public {
-Loan storage loan = loans[msg.sender];
-require(loan.approved, "Loan not approved");
-require(!loan.closed, "Loan already closed");
-require(loan.emiPaid < loan.totalEmi, "All EMIs paid");
+        // Modern safe ETH transfer to borrower
+        (bool sent, ) = borrower.call{value: msg.value}("");
+        require(sent, "Failed to send ETH to borrower");
+    }
 
-loan.emiPaid += 1;
-}
+    // ─── Calculate EMI amount ──────────────────────────────────────────────────
+    function calculateEMI(address borrower) public view returns (uint256) {
+        Loan memory loan = loans[borrower];
+        require(loan.approved, "Loan not approved");
 
-function setDocumentHash(string memory hash) public {
-require(loans[msg.sender].amount > 0, "Loan does not exist");
-loans[msg.sender].documentHash = hash;
-}
+        uint256 totalAmount = loan.amount + (loan.amount * loan.interest / 100);
+        return totalAmount / loan.duration;
+    }
 
-function closeLoan() public {
-Loan storage loan = loans[msg.sender];
-require(loan.emiPaid == loan.totalEmi, "EMIs not fully paid");
+    // ─── Borrower pays one EMI installment ────────────────────────────────────
+    function payEMI() public payable {
+        Loan storage loan = loans[msg.sender];
+        require(loan.approved,                "Loan not approved");
+        require(!loan.closed,                 "Loan already closed");
+        require(loan.emiPaid < loan.totalEmi, "All EMIs already paid");
 
-loan.closed = true;
-}
+        uint256 expectedEmi = calculateEMI(msg.sender);
+        require(msg.value == expectedEmi, "Must send exact EMI amount in ETH");
 
+        loan.emiPaid += 1;
+
+        // Modern safe ETH transfer to lender
+        (bool sent, ) = loan.lender.call{value: msg.value}("");
+        require(sent, "Failed to send ETH to lender");
+    }
+
+    // ─── Store IPFS document hash ──────────────────────────────────────────────
+    function setDocumentHash(string memory hash) public {
+        require(loans[msg.sender].amount > 0, "Loan does not exist");
+        loans[msg.sender].documentHash = hash;
+    }
+
+    // ─── Close the loan once all EMIs are paid ────────────────────────────────
+    function closeLoan() public {
+        Loan storage loan = loans[msg.sender];
+        require(loan.emiPaid == loan.totalEmi, "EMIs not fully paid");
+        loan.closed = true;
+    }
 }

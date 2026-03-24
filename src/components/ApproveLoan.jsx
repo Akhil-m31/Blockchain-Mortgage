@@ -98,7 +98,7 @@ export default function ApproveLoan({ contract, account, prefillAddress = '', on
     setTxHash(null);
     try {
       setLoading(true);
-      const tx = await contract.approveLoan(address);
+      const tx = await contract.approveLoan(address, { value: loan.amount });
       setMessage({ type: 'pending', text: 'Approval transaction submitted…' });
       setTxHash(tx.hash);
       await tx.wait();

@@ -11,6 +11,7 @@ import { parseLoan } from '../config';
 export default function PayEMI({ contract, account, onSuccess }) {
   const [loan,    setLoan]    = useState(null);
   const [emiAmt,  setEmiAmt]  = useState(null);
+  const [emiAmtWei, setEmiAmtWei] = useState(null);
   const [loading, setLoading] = useState(false);
   const [paying,  setPaying]  = useState(false);
   const [message, setMessage] = useState(null);
@@ -27,7 +28,8 @@ export default function PayEMI({ contract, account, onSuccess }) {
         try {
           const emi = await contract.calculateEMI(account);
           setEmiAmt(Number(emi) / 1e18);
-        } catch { setEmiAmt(null); }
+          setEmiAmtWei(emi);
+        } catch { setEmiAmt(null); setEmiAmtWei(null); }
       }
     } catch (err) {
       console.error('Failed to load loan for PayEMI:', err);
@@ -44,7 +46,7 @@ export default function PayEMI({ contract, account, onSuccess }) {
     setTxHash(null);
     try {
       setPaying(true);
-      const tx = await contract.payEMI();
+      const tx = await contract.payEMI({ value: emiAmtWei });
       setMessage({ type: 'pending', text: 'Processing EMI payment…' });
       setTxHash(tx.hash);
       await tx.wait();
