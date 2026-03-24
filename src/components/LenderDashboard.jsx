@@ -17,9 +17,9 @@ export default function LenderDashboard({ contract, account }) {
   };
 
   const tabs = [
-    { id: 'applications', label: '📋 Loan Applications', desc: 'Auto-scanned from blockchain' },
-    { id: 'approve',      label: '✅ Approve',           desc: 'Review & approve a loan' },
-    { id: 'inspect',      label: '🔍 Inspect',           desc: 'View any loan details' },
+    { id: 'applications', label: 'Loan Applications', desc: 'Auto-scanned from blockchain' },
+    { id: 'approve',      label: 'Approve',           desc: 'Review & approve a loan' },
+    { id: 'inspect',      label: 'Inspect',           desc: 'View any loan details' },
   ];
 
   return (
@@ -27,7 +27,7 @@ export default function LenderDashboard({ contract, account }) {
       {/* Hero */}
       <div className="dashboard-hero">
         <div className="dashboard-title-block">
-          <h1>💼 Lender Dashboard</h1>
+          <h1>Lender Dashboard</h1>
           <p>Applications appear here automatically when borrowers submit. Review, approve and monitor loans.</p>
         </div>
         <div className="dashboard-account">
@@ -64,17 +64,17 @@ export default function LenderDashboard({ contract, account }) {
               cursor: 'pointer',
               transition: 'all 200ms ease',
               background: activeTab === tab.id
-                ? 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(59,130,246,0.1))'
+                ? 'var(--navy-50)'
                 : 'transparent',
               borderBottom: activeTab === tab.id
-                ? '2px solid var(--violet-500)'
+                ? '2px solid var(--navy-700)'
                 : '2px solid transparent',
             }}
           >
             <span style={{
               fontSize: '0.88rem',
               fontWeight: 700,
-              color: activeTab === tab.id ? 'var(--text-primary)' : 'var(--text-muted)',
+              color: activeTab === tab.id ? 'var(--navy-900)' : 'var(--text-muted)',
               transition: 'color 200ms',
             }}>
               {tab.label}
@@ -93,7 +93,7 @@ export default function LenderDashboard({ contract, account }) {
       {activeTab === 'applications' && (
         <div className="card">
           <div className="card-header">
-            <div className="card-icon icon-amber">📋</div>
+            <div className="card-icon icon-amber">L</div>
             <div className="card-header-text">
               <h3>Loan Applications</h3>
               <p>All borrower applications from the blockchain, updated in real time</p>
@@ -112,7 +112,7 @@ export default function LenderDashboard({ contract, account }) {
       {activeTab === 'approve' && (
         <div className="card">
           <div className="card-header">
-            <div className="card-icon icon-green">✅</div>
+            <div className="card-icon icon-green">A</div>
             <div className="card-header-text">
               <h3>Approve Loan</h3>
               <p>Review terms and approve the borrower's application</p>
@@ -127,16 +127,16 @@ export default function LenderDashboard({ contract, account }) {
                   alignItems: 'center',
                   gap: 'var(--sp-3)',
                   padding: 'var(--sp-3) var(--sp-4)',
-                  background: 'rgba(124,58,237,0.06)',
-                  border: '1px solid rgba(124,58,237,0.2)',
+                  background: 'var(--navy-50)',
+                  border: '1px solid var(--navy-100)',
                   borderRadius: 'var(--r-lg)',
                   marginBottom: 'var(--sp-5)',
                   fontSize: '0.82rem',
                 }}
               >
-                <span>📋</span>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>&#9654;</span>
                 <span style={{ color: 'var(--text-muted)' }}>Selected from applications:</span>
-                <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--violet-400)', fontWeight: 700 }}>
+                <span style={{ fontFamily: 'var(--font-mono)', color: 'var(--navy-700)', fontWeight: 700 }}>
                   {selectedBorrower.slice(0, 12)}…{selectedBorrower.slice(-8)}
                 </span>
                 <button
@@ -144,7 +144,7 @@ export default function LenderDashboard({ contract, account }) {
                   style={{ marginLeft: 'auto' }}
                   onClick={() => { setSelectedBorrower(''); }}
                 >
-                  ✕ Clear
+                  Clear
                 </button>
               </div>
             )}
@@ -162,7 +162,7 @@ export default function LenderDashboard({ contract, account }) {
       {activeTab === 'inspect' && (
         <div className="card">
           <div className="card-header">
-            <div className="card-icon icon-blue">🔍</div>
+            <div className="card-icon icon-blue">I</div>
             <div className="card-header-text">
               <h3>Inspect Any Loan</h3>
               <p>Read-only view of any borrower's full loan details</p>
