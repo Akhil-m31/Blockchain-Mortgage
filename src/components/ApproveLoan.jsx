@@ -246,16 +246,21 @@ export default function ApproveLoan({ contract, account, prefillAddress = '', on
       )}
 
       {/* Approve Button */}
-      {loan && !loan.approved && !loan.closed && (
-        <button
-          className="btn btn-success btn-full"
-          onClick={handleApprove}
-          disabled={loading}
-        >
-          {loading
-            ? <><span className="btn-spinner" /> Approving…</>
-            : 'Approve Loan'}
-        </button>
+    {loan && !loan.approved && !loan.closed && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-2)' }}>
+          <button
+            className="btn btn-success btn-full"
+            onClick={handleApprove}
+            disabled={loading}
+          >
+            {loading
+              ? <><span className="btn-spinner" /> Processing Transfer…</>
+              : `Approve & Transfer ${loan.amountEth.toFixed(4)} ETH`}
+          </button>
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', textAlign: 'center' }}>
+            Approving will instantly transfer the loan amount from your wallet.
+          </span>
+        </div>
       )}
 
       {/* Already approved info */}

@@ -16,6 +16,11 @@ contract Mortgage {
         bool closed;
     }
 
+    event LoanApplied(address indexed borrower, uint256 amount, uint256 interest, uint256 duration);
+    event LoanApproved(address indexed borrower, address indexed lender, uint256 amount);
+    event EMIPaid(address indexed borrower, address indexed lender, uint256 amount, uint256 emiIndex);
+    event LoanClosed(address indexed borrower);
+
     mapping(address => Loan) public loans;
 
     // ─── Borrower applies for a loan ───────────────────────────────────────────
@@ -32,6 +37,7 @@ contract Mortgage {
             "",
             false
         );
+        emit LoanApplied(msg.sender, amount, interest, duration);
     }
 
     // ─── Read loan details ─────────────────────────────────────────────────────
@@ -77,6 +83,8 @@ contract Mortgage {
         // Modern safe ETH transfer to borrower
         (bool sent, ) = borrower.call{value: msg.value}("");
         require(sent, "Failed to send ETH to borrower");
+
+        emit LoanApproved(borrower, msg.sender, msg.value);
     }
 
     // ─── Calculate EMI amount ──────────────────────────────────────────────────
@@ -103,6 +111,8 @@ contract Mortgage {
         // Modern safe ETH transfer to lender
         (bool sent, ) = loan.lender.call{value: msg.value}("");
         require(sent, "Failed to send ETH to lender");
+
+        emit EMIPaid(msg.sender, loan.lender, msg.value, loan.emiPaid);
     }
 
     // ─── Store IPFS document hash ──────────────────────────────────────────────
@@ -116,5 +126,6 @@ contract Mortgage {
         Loan storage loan = loans[msg.sender];
         require(loan.emiPaid == loan.totalEmi, "EMIs not fully paid");
         loan.closed = true;
+        emit LoanClosed(msg.sender);
     }
 }

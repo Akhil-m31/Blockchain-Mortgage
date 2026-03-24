@@ -46,9 +46,14 @@ export default function LoanDetails({ contract, account }) {
     }
   }, [contract, account]);
 
-  useEffect(() => { fetchDetails(); }, [fetchDetails]);
+  useEffect(() => { 
+    fetchDetails(); 
+    // Polling: refresh every 10s to catch approvals or background updates
+    const interval = setInterval(fetchDetails, 10000);
+    return () => clearInterval(interval);
+  }, [fetchDetails]);
 
-  if (loading) return (
+  if (loading && !loan) return (
     <div className="load-state">
       <div className="spinner spinner-sm" />
       <span style={{ fontSize: '0.85rem' }}>Loading loan data…</span>
@@ -76,12 +81,31 @@ export default function LoanDetails({ contract, account }) {
               <span className="status-dot" />
               {loan.closed ? 'Closed' : loan.approved ? 'Active' : 'Pending Approval'}
             </span>
+            {loan.approved && !loan.closed && (
+              <span style={{ fontSize: '0.82rem', color: 'var(--emerald-400)', fontWeight: 600 }}>
+                • Funds Received in Wallet
+              </span>
+            )}
             {loan.closed && (
               <span style={{ fontSize: '0.82rem', color: 'var(--emerald-400)' }}>
                 ✅ Fully repaid
               </span>
             )}
           </div>
+
+          {/* Success message when just approved */}
+          {loan.approved && !loan.closed && loan.emiPaid === 0 && (
+            <div className="alert alert-success" style={{ animation: 'pulse 2s infinite' }}>
+              <span className="alert-icon">🎉</span>
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontWeight: 700 }}>Loan Approved & Funded!</span>
+                <span style={{ fontSize: '0.8rem', opacity: 0.9 }}>
+                  The requested amount of {loan.amountEth.toFixed(4)} ETH has been transferred to your wallet. 
+                  You can now begin paying your monthly installments.
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Stats Grid */}
           <div className="loan-stats-grid">

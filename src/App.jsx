@@ -67,6 +67,35 @@ function App() {
     }
   }, [account, initializeProvider]);
 
+  // Listen for Contract Events
+  useEffect(() => {
+    if (!contract || !account) return;
+
+    const onApproved = (borrower, lender, amount) => {
+      if (borrower.toLowerCase() === account.toLowerCase()) {
+        const amt = Number(amount) / 1e18;
+        alert(`🎉 GREAT NEWS! Your loan of ${amt} ETH has been approved and funded! Check your wallet.`);
+        // Refresh page to sync data
+        window.location.reload();
+      }
+    };
+
+    const onEmiPaid = (borrower, lender, amount, emiIndex) => {
+      if (lender.toLowerCase() === account.toLowerCase()) {
+        const amt = Number(amount) / 1e18;
+        alert(`💰 EMI RECEIVED: You just received a payment of ${amt.toFixed(6)} ETH from borrower ${borrower.slice(0, 6)}...`);
+      }
+    };
+
+    contract.on('LoanApproved', onApproved);
+    contract.on('EMIPaid',       onEmiPaid);
+
+    return () => {
+      contract.off('LoanApproved', onApproved);
+      contract.off('EMIPaid',       onEmiPaid);
+    };
+  }, [contract, account]);
+
   const handleConnect = (acc) => setAccount(acc);
   const handleDisconnect = () => {
     setAccount(null);
