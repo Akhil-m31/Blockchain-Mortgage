@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { ethers } from 'ethers';
 
 /**
@@ -17,14 +17,20 @@ export default function ApplyLoanForm({ contract, onSuccess }) {
   const [loading,  setLoading]  = useState(false);
   const [message,  setMessage]  = useState(null);
   const [txHash,   setTxHash]   = useState(null);
+  const [file,     setFile]     = useState(null);
+  const [dragOver, setDragOver] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const PINATA_KEY    = import.meta.env.VITE_PINATA_API_KEY || '';
+  const PINATA_SECRET = import.meta.env.VITE_PINATA_SECRET_API_KEY || '';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage(null);
     setTxHash(null);
 
-    if (!amount || !interest || !duration) {
-      setMessage({ type: 'error', text: 'All fields are required.' });
+    if (!amount || !interest || !duration || !file) {
+      setMessage({ type: 'error', text: 'All fields including the mortgage document are required.' });
       return;
     }
     if (parseFloat(amount) <= 0) {
@@ -47,20 +53,37 @@ export default function ApplyLoanForm({ contract, onSuccess }) {
     try {
       setLoading(true);
 
-      // amount: ETH → Wei
+      // Step 1: Upload to IPFS
+      setMessage({ type: 'pending', text: 'Uploading document to IPFS…' });
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const ipfsRes = await fetch('https://api.pinata.cloud/pinning/pinFileToIPFS', {
+        method: 'POST',
+        headers: {
+          pinata_api_key: PINATA_KEY,
+          pinata_secret_api_key: PINATA_SECRET,
+        },
+        body: formData,
+      });
+
+      if (!ipfsRes.ok) throw new Error(`IPFS Upload: ${ipfsRes.statusText}`);
+      const ipfsData = await ipfsRes.json();
+      const ipfsHash = ipfsData.IpfsHash;
+
+      // Step 2: Blockchain Transaction
+      setMessage({ type: 'pending', text: 'Submitting transaction to blockchain…' });
+      
       const loanAmountWei = ethers.parseEther(amount);
-      // interest: plain integer (e.g. 10 → stored as uint256(10))
       const interestRate  = BigInt(Math.round(parseFloat(interest)));
-      // duration: months as uint256
       const loanDuration  = BigInt(parseInt(duration));
 
-      const tx = await contract.applyLoan(loanAmountWei, interestRate, loanDuration);
-      setMessage({ type: 'pending', text: 'Submitting application…' });
+      const tx = await contract.applyLoan(loanAmountWei, interestRate, loanDuration, ipfsHash);
       setTxHash(tx.hash);
 
       await tx.wait();
-      setMessage({ type: 'success', text: 'Loan application submitted successfully. Awaiting lender approval.' });
-      setAmount(''); setInterest(''); setDuration('');
+      setMessage({ type: 'success', text: 'Loan application and document submitted successfully. Awaiting lender approval.' });
+      setAmount(''); setInterest(''); setDuration(''); setFile(null);
       if (onSuccess) onSuccess();
     } catch (err) {
       if (err.code === 'ACTION_REJECTED') {
@@ -156,6 +179,37 @@ export default function ApplyLoanForm({ contract, onSuccess }) {
           />
         </div>
         <span className="form-hint">Number of monthly installments</span>
+      </div>
+
+      {/* File Attachment */}
+      <div className="form-group">
+        <label className="form-label">Mortgage Document</label>
+        <div
+          className={`file-drop-zone ${dragOver ? 'drag-over' : ''}`}
+          onClick={() => fileInputRef.current?.click()}
+          onDragOver={e => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={e => {
+            e.preventDefault();
+            setDragOver(false);
+            const f = e.dataTransfer.files[0];
+            if (f) setFile(f);
+          }}
+          style={{ padding: 'var(--sp-4)', minHeight: '100px' }}
+        >
+          <span className="file-drop-icon" style={{ fontSize: '1.5rem' }}>📁</span>
+          <div className="file-drop-text" style={{ fontSize: '0.85rem' }}>
+            {file ? file.name : 'Click to select or drag document here'}
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            style={{ display: 'none' }}
+            onChange={e => setFile(e.target.files[0])}
+            disabled={loading}
+          />
+        </div>
+        <span className="form-hint">Upload property deeds or identity proof (PDF/Image)</span>
       </div>
 
       {/* Preview */}

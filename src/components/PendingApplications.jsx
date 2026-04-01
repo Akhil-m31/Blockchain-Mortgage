@@ -18,9 +18,9 @@ export default function PendingApplications({ contract, onSelectBorrower }) {
   const [lastScanned,  setLastScanned]  = useState(null);
   const [error,        setError]        = useState(null);
 
-  // The 4-byte function selector for applyLoan(uint256,uint256,uint256)
-  // keccak256("applyLoan(uint256,uint256,uint256)").slice(0,10) = 0x120fb04d
-  const APPLY_LOAN_SELECTOR = '0x120fb04d';
+  // The 4-byte function selector for applyLoan(uint256,uint256,uint256,string)
+  // keccak256("applyLoan(uint256,uint256,uint256,string)").slice(0,10) = 0xec002987
+  const APPLY_LOAN_SELECTOR = '0xec002987';
 
   const scan = useCallback(async () => {
     if (!contract) return;

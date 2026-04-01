@@ -24,7 +24,7 @@ contract Mortgage {
     mapping(address => Loan) public loans;
 
     // ─── Borrower applies for a loan ───────────────────────────────────────────
-    function applyLoan(uint256 amount, uint256 interest, uint256 duration) public {
+    function applyLoan(uint256 amount, uint256 interest, uint256 duration, string memory documentHash) public {
         loans[msg.sender] = Loan(
             msg.sender,
             payable(address(0)),
@@ -34,7 +34,7 @@ contract Mortgage {
             false,
             0,
             duration,
-            "",
+            documentHash,
             false
         );
         emit LoanApplied(msg.sender, amount, interest, duration);

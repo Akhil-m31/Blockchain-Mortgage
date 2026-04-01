@@ -18,7 +18,8 @@ export default function LoanDetails({ contract, account }) {
     setLoading(true);
     setError(null);
     try {
-      const raw  = await contract.getLoan(account);
+      // Use the mapping getter directly as it is more robust to ABI signature mismatches
+      const raw  = await contract.loans(account);
       const parsed = parseLoan(raw);
 
       if (!parsed) {
@@ -39,7 +40,11 @@ export default function LoanDetails({ contract, account }) {
         }
       }
     } catch (err) {
-      setError('Failed to load loan details: ' + err.message);
+      if (err.message?.includes('could not decode') || err.message?.includes('0x') || err.code === 'BAD_DATA') {
+        setError('Connection Error: The contract returned no data (0x). This usually means the VITE_CONTRACT_ADDRESS in your .env file is incorrect or you are on the wrong network.');
+      } else {
+        setError('Failed to load loan details: ' + err.message);
+      }
       setLoan(null);
     } finally {
       setLoading(false);

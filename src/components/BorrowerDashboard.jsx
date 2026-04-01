@@ -2,7 +2,6 @@ import { useState } from 'react';
 import ApplyLoanForm from './ApplyLoanForm';
 import LoanDetails from './LoanDetails';
 import PayEMI from './PayEMI';
-import IPFSUpload from './IPFSUpload';
 import CloseLoan from './CloseLoan';
 
 export default function BorrowerDashboard({ contract, account }) {
@@ -41,20 +40,6 @@ export default function BorrowerDashboard({ contract, account }) {
             </div>
             <div className="card-body">
               <ApplyLoanForm contract={contract} onSuccess={triggerRefresh} />
-            </div>
-          </div>
-
-          {/* Document Upload */}
-          <div className="card">
-            <div className="card-header">
-              <div className="card-icon icon-violet">D</div>
-              <div className="card-header-text">
-                <h3>Upload Document</h3>
-                <p>Store your mortgage docs on IPFS</p>
-              </div>
-            </div>
-            <div className="card-body">
-              <IPFSUpload contract={contract} account={account} onSuccess={triggerRefresh} />
             </div>
           </div>
 
